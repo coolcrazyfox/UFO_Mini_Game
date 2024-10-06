@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UFO_Mini_Game</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(156, 22, 42, 0.981);
+        padding: 30px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      button {
+        width: 135px;
+        padding: 10px 25px;
+        margin-left: 1rem;
+        background-color: rgba(56, 46, 88, 0.981);
+        border: none;
+        border-radius: 9px;
+        color: white;
+        box-shadow: 0 2px 9px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .game-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        color: white;
+        box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.5);
+        border: 2px solid rgba(156, 22, 42, 0.981);
+        border-radius: 9px;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        height: 80vh;
+        border-radius: 10px;
+        margin: 10px auto;
+        background-image: url("images/wallSecond.jpg");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        box-shadow: 0 0 50px 30px rgba(0, 0, 0, 0.5);
+        cursor: url("images/aimFirst.svg"), pointer;
+      }
+
+      .item {
+        box-sizing: border-box;
+        width: 210px;
+        height: 200px;
+        margin: 10px 20px;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="game-panel">
+      <div>
+        <button id="sound-btn">SOUND ON</button>
+        <button id="start-btn">START</button>
+      </div>
+      <div>
+        <div class="counter">
+          HITS:
+          <span id="hit-counter">0</span>
+        </div>
+        <div class="counter">
+          MISS:
+          <span id="miss-counter">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+      <div class="item"></div>
+    </div>
+    <!-- <audio id="sound-bu" src="sounds/bu.mp3" loop></audio> -->
+    <audio id="sound-music" src="sounds/music.mp3" loop></audio>
+    <audio id="sound-shot" src="sounds/shot.mp3"></audio>
+    <audio id="sound-ufo" src="sounds/ufoItem.mp3"></audio>
+    <audio id="sound-miss" src="sounds/miss.mp3"></audio>
+
+    <script>
+      let randomIndex;
+      let hit = true;
+      let miss = false;
+      let isStarted = false;
+      let interval;
+
+      function getRandomIndex(array) {
+        return Math.floor(Math.random() * array.length);
+      }
+
+      const items = document.querySelectorAll(".item");
+      const missCounter = document.getElementById("miss-counter");
+
+      const zombieImg = document.createElement("img");
+      //   zombieImg.src = "images/zombie.png";
+      zombieImg.src = "images/UFO.png";
+
+      const bu = document.getElementById("sound-music");
+      const soundBtn = document.getElementById("sound-btn");
+
+      const startBtn = document.getElementById("start-btn");
+
+      const hitImg = document.createElement("img");
+      //   hitImg.src = "images/blood.png";
+      hitImg.src = "images/bang.png";
+
+      const shot = document.getElementById("sound-shot");
+      const ufoSoundItem = document.getElementById("sound-ufo");
+      const missCounterSound = document.getElementById("sound-miss");
+      const hitCounter = document.getElementById("hit-counter");
+
+      soundBtn.onclick = function () {
+        if (bu.currentTime) {
+          bu.pause();
+          bu.currentTime = 0;
+          soundBtn.innerHTML = "SOUND ON";
+        } else {
+          bu.play();
+          soundBtn.innerHTML = "SOUND OFF";
+        }
+      };
+
+      zombieImg.onclick = function () {
+        hit = true;
+        shot.currentTime = 0;
+        shot.play();
+        zombieImg.remove();
+        items[randomIndex].append(hitImg);
+        hitCounter.innerText++;
+      };
+
+      startBtn.onclick = function () {
+        if (!isStarted) {
+          // запустить
+          isStarted = true;
+          playGame();
+          startBtn.innerText = "STOP";
+        } else {
+          // остановить
+          isStarted = false;
+          clearInterval(interval);
+          startBtn.innerText = "START";
+          hitCounter.innerText = 0;
+          missCounter.innerText = 0;
+          zombieImg.remove();
+          hitImg.remove();
+        }
+      };
+
+      //game
+      function playGame() {
+        randomIndex = getRandomIndex(items);
+        items[randomIndex].append(zombieImg);
+
+        interval = setInterval(function () {
+          if (hit) {
+            hit = false;
+          } else {
+            missCounter.innerText++;
+            miss = true;
+          }
+          ufoSoundItem.play();
+          randomIndex = getRandomIndex(items);
+
+          items[randomIndex].append(zombieImg);
+          hitImg.remove();
+          //   missCounterSound.play();
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
